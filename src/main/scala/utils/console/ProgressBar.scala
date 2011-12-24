@@ -1,7 +1,7 @@
-import scalaa.utils.time
+package scalaa.utils.console
+import scalaa.utils.time._
 import scala.math.Numeric
 
-package scalaa.utils.console
 
 /** Class that computes the running average of a variety of numeric types
   * Author: Rob Patro */

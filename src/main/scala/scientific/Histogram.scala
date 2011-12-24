@@ -1,6 +1,6 @@
+package scalaa.scientific
 import scala.math._
 import scalala.tensor.dense._
-package scalaa.utils.scientific
 
 object Histogram {
   implicit def toOption[T]( x:T ): Option[T] = { Option(x) }

@@ -1,4 +1,7 @@
 package scalaa.utils.system
+import scala.actors.Future
+import scala.actors.Futures._
+import scala.sys.process._
 
 /** Various tools for managing system processes
  *  This is still in its infancy. */
@@ -14,16 +17,9 @@ object ProcessManager {
   }
  
   /** Convenience function to launch a process and kill it after a timeout */
-  def launch(pname: String, timeout: Int): Option[Any] { 
+  def launch(pname: String, timeout: Int): Option[Any] = { 
     val proc = Process(pname)
-    val pio = new ProcessIO(
-      stdin => { stdin.write(dbytes); stdin.close() },
-      stdio => { obuf.append(Source.fromInputStream(stdio).getLines.mkString("")) },
-      stderr => {
-        //ebuf.append(Source.fromInputStream(stderr).getLines.mkString(""))
-        //Source.fromInputStream(stderr).getLines.foreach{ x=>println(x) }
-      }
-    )
+    val pio = new ProcessIO(stdin => { }, stdio => { }, stderr => { })
 
     val r = proc.run(pio)
     val f = future{ r.exitValue }
