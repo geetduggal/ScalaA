@@ -4,7 +4,9 @@ import scala.math.Numeric
 
 
 /** Class that computes the running average of a variety of numeric types
-  * Author: Rob Patro */
+  *
+  * @author Rob Patro 
+  */
 class RunningAverage {
   var _prev = 0.0
   var _n = 0L

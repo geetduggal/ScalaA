@@ -1,7 +1,9 @@
 package scalaa.utils.time
 
 /** Class that provides the ability to simply measure the elapsed time
-  * Author: Rob Patro */
+  *
+  * @author Rob Patro 
+  */
 class Timer {
   private var _tstart = 0L
   private var _telapsed = 0L
