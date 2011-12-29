@@ -1,4 +1,4 @@
-package scalaa.utils.system
+package scalaa.system
 import scala.actors.Future
 import scala.actors.Futures._
 import scala.sys.process._

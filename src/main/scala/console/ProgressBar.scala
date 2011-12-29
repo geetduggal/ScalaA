@@ -1,5 +1,5 @@
-package scalaa.utils.console
-import scalaa.utils.time._
+package scalaa.console
+import scalaa.time._
 import scala.math.Numeric
 
 

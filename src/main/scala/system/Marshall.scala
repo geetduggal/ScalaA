@@ -1,4 +1,4 @@
-package scalaa.utils.system
+package scalaa.system
 
 /** Procedures for storing/reading Serializable classes to/from disk 
   *

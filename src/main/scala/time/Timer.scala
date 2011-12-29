@@ -1,4 +1,4 @@
-package scalaa.utils.time
+package scalaa.time
 
 /** Class that provides the ability to simply measure the elapsed time
   *
