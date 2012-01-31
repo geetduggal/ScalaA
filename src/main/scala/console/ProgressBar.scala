@@ -89,7 +89,11 @@ class ProgressBar(tot:Int, ms:String, length:Int = 80 )  {
   }
 
   /** Finalize the progress bar */
-  def done() = { print("\n") }
+  def done() = { 
+    update(tot)  
+    print("\n") 
+  }
 
   update(0)
 }
+    

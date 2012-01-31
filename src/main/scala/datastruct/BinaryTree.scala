@@ -10,9 +10,7 @@ case class BinaryTreeNode[+T](value: T, left: BinaryTree[T], right: BinaryTree[T
     "T(" + value.toString + " " + left.toString + " " + right.toString + ")"
 }
 
-case object End extends BinaryTree[Nothing] {
-  override def toString = "."
-}
+case object End extends BinaryTree[Nothing] {override def toString = "."}
 
 object BinaryTreeNode {
   def apply[T](value: T): BinaryTreeNode[T] = BinaryTreeNode(value, End, End)
