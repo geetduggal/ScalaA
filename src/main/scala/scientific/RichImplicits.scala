@@ -2,53 +2,27 @@ package scalaa.scientific
 import scalaa.console.ProgressBar
 import scala.collection.IterableLike
 import scala.util.Random
-  
-trait ProgressableLike[+A, +S] extends IterableLike[A, S] {
-  override def foreach[U](f: A => U): Unit = {
-    val pb = new ProgressBar(iterator.size, "*")
-    iterator.zipWithIndex.foreach{ case(a,i) => 
-      f(a)
-      pb.update(i)
-    }  
-    pb.done()
-  } 
-}
 
-//trait Progressable[+A] extends ProgressableLike[A, Progressable[A]]
-
-import scala.collection.mutable.Builder  
-case class Progressor[A, S[A] <: Iterable[A]](val s: S[A]) extends IterableLike[A, S[A]]
-//extends ProgressableLike[A, S[A]]
-{
-  type thisType = Progressor[A, S[A]]
-  def newBuilder[A]: Builder[A, ]]] = s.genericBuilder[A].mapResult{ x => Progressor(x) }
-  override def iterator = s.iterator
-  override def foreach[U](f: A => U): Unit = {
-    val pb = new ProgressBar(iterator.size, "*")
-    iterator.zipWithIndex.foreach{ case(a,i) => 
-      f(a)
-      pb.update(i)
-    }  
-    pb.done()
-  } 
-}
+import scala.collection._
+import generic.CanBuildFrom
+import mutable.Builder
 
 object RichImplicits {
   implicit def wrapIndexable[A](seq: IndexedSeq[A]) = new RichIndexable(seq)
   implicit def wrapIterable[A, S[A] <: Iterable[A]](seq: S[A]) =
     new RichIterable(seq)
-  
-  
-  class RichIndexable[A](val seq: IndexedSeq[A]) { 
+
+
+  class RichIndexable[A](val seq: IndexedSeq[A]) {
     val random = Random
     def choice() = { seq(random.nextInt(seq.size)) }
   }
-  
+
   class RichIterable[A, S[A] <: Iterable[A]](val seq: S[A]) {
-  
+
     val b = seq.genericBuilder[A]
     val random = scala.util.Random
-  
+
     def sample(k: Int) = {
       val n = seq.size
       // TODO: If you want more than half the elements, ...
@@ -68,28 +42,64 @@ object RichImplicits {
       }
       b.result
     }
-    
+
     def choice() = { sample(1).head }
-  
-    def progress = new Progressor(seq)
-    
+
+    //def progress = new Progressor(seq)
+
   }
-  
+
 }
-  
+
 // Code bin
 
-//implicit def wrapTraversable[A: ClassManifest, S <% Traversable[A]](seq: S) = 
+//implicit def wrapTraversable[A: ClassManifest, S <% Traversable[A]](seq: S) =
 // new RichTraversable[A, S](seq)
-//class RichTraversable[@specialized A: ClassManifest, S <% Traversable[A]](val seq: S) { 
-//  def diff()(implicit numeric:Numeric[A]): IndexedSeq[A] = { 
+//class RichTraversable[@specialized A: ClassManifest, S <% Traversable[A]](val seq: S) {
+//  def diff()(implicit numeric:Numeric[A]): IndexedSeq[A] = {
 //    val d = ArrayBuffer[A]()
 //    var prev = seq.head
-//    seq.tail.foreach{ x => 
+//    seq.tail.foreach{ x =>
 //      //d += x-prev
 //      d += numeric.minus(x, prev)
 //      prev = x
 //    }
-//    d 
+//    d
 //  }
 //}
+
+/*
+class Progressable[A, C <: Iterable[A]]( xs: C with IterableLike[A,C] ) {
+  def progress
+}
+
+trait ProgressableLike[+A, +S] extends IterableLike[A, S] {
+  override def foreach[U](f: A => U): Unit = {
+    val pb = new ProgressBar(iterator.size, "*")
+    iterator.zipWithIndex.foreach{ case(a,i) =>
+      f(a)
+      pb.update(i)
+    }
+    pb.done()
+  }
+}
+
+//trait Progressable[+A] extends ProgressableLike[A, Progressable[A]]
+
+case class Progressor[A, S[A] <: Iterable[A]](val s: S[A] with IterableLike[A, S[A]]) extends IterableLike[A, S[A]]
+//extends ProgressableLike[A, S[A]]
+{
+
+  //def newBuilder[A, That](implicit cbf: CanBuildFrom[S[A], A, That]): Builder[A, That] = cbf()
+  def newBuilder[A]: Builder[A, S[A]] = s.genericBuilder//.mapResult{ x => Progressor( x.asInstanceOf[S[A]] ) }
+  override def iterator = s.iterator
+  override def foreach[U](f: A => U): Unit = {
+    val pb = new ProgressBar(iterator.size, "*")
+    iterator.zipWithIndex.foreach{ case(a,i) =>
+      f(a)
+      pb.update(i)
+    }
+    pb.done()
+  }
+}
+*/
