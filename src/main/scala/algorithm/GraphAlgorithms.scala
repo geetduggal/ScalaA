@@ -109,8 +109,6 @@ object GraphAlgorithms {
     (dy*x1 + cutoff - y1)/dy
   }
 
-  // === We need to decide on one or more sparse matrix libraries for ScalaA before we include this code ==
-  /*
   def eigenvectorCentrality[N]( graph: MGraph[N, UnDiEdge] ) = {
     val adjMat = new SparseRowMat( graph.order, graph.order )
     val nodeIndMap = graph.nodes.zipWithIndex.toMap
@@ -157,7 +155,6 @@ object GraphAlgorithms {
       }
       devals
   }
-  */
 
   /**  Subsample the source graph at a level of frac
     *
