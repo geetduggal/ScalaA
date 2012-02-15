@@ -1,5 +1,6 @@
 package scalaa.graph
 
+import scalaa.scientific.{PowerIteration, LaplacianCalculator}
 import scalaa.scientific.distributions._
 
 import scala.collection.mutable.{Map, Stack => MStack, Set => MSet, Queue => MQueue}
@@ -10,7 +11,7 @@ import scala.collection.mutable.OpenHashMap
 import scala.collection.mutable.HashSet
 import scalax.collection.GraphTraversal.VisitorReturn.{ Continue => ContinueTrav, Cancel => CancelTrav }
 
-//import no.uib.cipr.matrix.sparse.{ FlexCompRowMatrix => SparseRowMat }
+import no.uib.cipr.matrix.sparse.{ FlexCompRowMatrix => SparseRowMat }
 
 import scala.util._
 import scalala.tensor.dense._
