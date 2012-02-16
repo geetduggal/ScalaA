@@ -13,13 +13,16 @@ object RichImplicits {
   implicit def wrapIterable[A, S[A] <: Iterable[A]](seq: S[A]) =
     new RichIterable(seq)
   
-  class Progressable[A, S[A] <: Iterable[A]](seq: S[A]) extends Iterable[A] {
+  // ArrayBuffer.fill(100000)(0).progress(.1).map{x=>x}
+  
+  class Progressable[A, S[A] <: Iterable[A]](seq: S[A], sample: Double) extends Iterable[A] {
     def iterator = seq.iterator
     override def foreach[U](f: A => U): Unit = {
       val pb = new ProgressBar(iterator.size, "*")
+      val siter = (1/sample).toInt
       iterator.zipWithIndex.foreach{ case(a,i) =>
         f(a)
-        pb.update(i)
+        if (i % siter == 0) { pb.update(i) }
       }
       pb.done()
     }
@@ -57,7 +60,7 @@ object RichImplicits {
 
     def choice() = { sample(1).head }
 
-    def progress = new Progressable(seq)
+    def progress(sample: Double = 1.0) = new Progressable(seq, sample)
 
   }
 
