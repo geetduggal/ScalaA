@@ -6,12 +6,24 @@ import scala.util.Random
 import scala.collection._
 import generic.CanBuildFrom
 import mutable.Builder
+import scala.collection.Set
 
 object RichImplicits {
   implicit def wrapIndexable[A](seq: IndexedSeq[A]) = new RichIndexable(seq)
   implicit def wrapIterable[A, S[A] <: Iterable[A]](seq: S[A]) =
     new RichIterable(seq)
-
+  
+  class Progressable[A, S[A] <: Iterable[A]](seq: S[A]) extends Iterable[A] {
+    def iterator = seq.iterator
+    override def foreach[U](f: A => U): Unit = {
+      val pb = new ProgressBar(iterator.size, "*")
+      iterator.zipWithIndex.foreach{ case(a,i) =>
+        f(a)
+        pb.update(i)
+      }
+      pb.done()
+    }
+  }
 
   class RichIndexable[A](val seq: IndexedSeq[A]) {
     val random = Random
@@ -45,7 +57,7 @@ object RichImplicits {
 
     def choice() = { sample(1).head }
 
-    //def progress = new Progressor(seq)
+    def progress = new Progressable(seq)
 
   }
 

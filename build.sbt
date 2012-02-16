@@ -14,6 +14,7 @@ seq(ProguardPlugin.proguardSettings :_*)
 
 proguardOptions ++= Seq (
   "-keep class scalala.** { *; }",
+  "-keep class scalaa.** { *; }",
   "-dontoptimize",
   "-dontobfuscate", 
   keepAllScala,
