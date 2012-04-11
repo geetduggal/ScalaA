@@ -16,7 +16,7 @@ class SlimGraph[N <% Ordered[N]]() {
   
   def hasEdge(u: N, v: N, directed: Boolean = false ) = { 
     val fwdEdge = if (adjList.contains(u)) { adjList(u).contains(v) } else { false }
-    val bkEdge = if ( ! directed ) { adjList(u).contains(v) } else { false }
+    val bkEdge = if ( ! directed && adjList.contains(v) ) { adjList(v).contains(u) } else { false }
     if ( ! directed ) { fwdEdge && bkEdge } else { fwdEdge }
   }
 
@@ -202,6 +202,53 @@ object EdgeListReader {
     graph
   }
 
+}
+
+object AdjListReader {
+
+  def fromFile( fname: String, directed: Boolean = false, weighted: Boolean = false ) = {
+    val fsrc = Source.fromFile( fname )
+    val graph = SlimGraph[String]()
+
+    fsrc.getLines.foreach{ l =>
+      if ( !l.trim.startsWith("#") ) { // ignore comments
+        val toks = l.split("""\s+""").toList
+        val u = toks.head
+        val vList = toks.tail
+        val weight = 1.0
+        vList.foreach{ v => if(!graph.hasEdge(u,v,directed)) { graph.insertEdge(u,v,directed,weight) } }        
+      }
+    }
+    graph
+  }
+}
+
+object MultiAdjListReader {
+
+  def fromFile( fname: String, directed: Boolean = false, weighted: Boolean = false ) = {
+    val lineIt = Source.fromFile( fname ).getLines
+    val graph = SlimGraph[String]()
+
+    def addNeighbors( u: String, n: Int ) {
+      (0 until n).foreach{ i =>
+        val l = lineIt.next
+        val toks = l.split("""\s+""").toList
+        val v = toks(0)
+        val weight = if (weighted) { toks(1).toDouble } else { 1.0 }
+        if (!graph.hasEdge(u,v,directed)) { graph.insertEdge(u,v,directed,weight) }
+      }
+    }
+
+    while (lineIt.hasNext) {
+      val l = lineIt.next
+      if ( !l.trim.startsWith("#") ) { // ignore comments
+        val toks = l.split("""\s+""").toList
+        val (u, n) = (toks(0), toks(1).toInt)
+        addNeighbors(u, n)
+      }
+    }
+    graph
+  }
 }
 
 object SlimGraph {
