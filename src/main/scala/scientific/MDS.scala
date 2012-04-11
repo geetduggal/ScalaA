@@ -11,7 +11,7 @@ object MDS {
     val J = DenseMatrix.eye[Double](n) - DenseMatrix.ones[Double](n,n)*1/n.toDouble
     val B = J*D*J*(-0.5)
     val (r,i,v) = eig(B)
-    val s = r.map({ x => if (x<1e-10) {0} else {x}})
+    val s = r.map({ x => if (x < 1e-10) {0} else {x}})
     val order = s.argsort.reverse
     val w = v(order,::)
     val sqErr = s(order):^2.0
