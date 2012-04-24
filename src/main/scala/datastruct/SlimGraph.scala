@@ -2,7 +2,7 @@ package scalaa.datastruct
 
 import scala.collection.mutable.{OpenHashMap=>Map}
 import scala.collection.mutable.Set
-import scala.collection.mutable.{Set=>GraphList}
+import scala.collection.mutable.{ HashSet, Set => GraphList}
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 import scala.math.Ordered
@@ -51,7 +51,7 @@ class SlimGraph[N <% Ordered[N]]() {
     def insertAdjList(u: N, v: N) {
 
       if (!adjList.contains(u)) { adjList(u) = GraphList.empty[N] }
-      
+      if (!adjList.contains(v)) { adjList(v) = GraphList.empty[N] }
       adjList(u) += v
       size += 1
       if (weight < Double.MaxValue) {
@@ -77,7 +77,7 @@ class SlimGraph[N <% Ordered[N]]() {
     if (!directed) { removeAdjList(v,u) }
   }
   
-  def insertNode(u: N) = adjList(u) = GraphList.empty[N]
+  def insertNode(u: N) = if( ! (adjList contains u) ) { adjList(u) = GraphList.empty[N] }
   def removeNode(u: N) = adjList -= u
 
   def neighbors(u: N) = { adjList(u) }
@@ -144,6 +144,37 @@ class SlimGraph[N <% Ordered[N]]() {
     return false
   }
  
+ /**
+ * Return an array of the vertices in a topologically sorted order;
+ * raises an exception if the graph is cyclic or undirected
+ * 
+ * DFS based on the wikipedia article at http://en.wikipedia.org/wiki/Topological_sorting
+ */
+ def topologicalOrdering(): ArrayBuffer[N] = {
+    val L = new ArrayBuffer[N]( order )
+    val visited = HashSet.empty[N]
+
+    val inNeighbors = Map.empty[N, GraphList[N]]
+    // Starts out empty
+    nodes.foreach{ n => inNeighbors(n) = GraphList.empty[N] }
+    // Build the incoming neighbor list
+    nodes.foreach{ u => neighbors(u).foreach{ v => inNeighbors(v) += u } }
+
+    // All nodes with no outgoing edges
+    val S = scala.collection.mutable.Stack( nodes.filter{ n => neighbors(n).size == 0 } )
+    nodes.foreach{ n => visit(n) }
+
+    def visit( u: N ) {
+      if ( ! visited.contains(u) ) {
+        visited += u
+        inNeighbors(u).foreach{ v =>  visit(v) }
+        L += u
+      }
+    }
+    // We have to have everything in L
+    assert( L.size == nodes.size, "Size of topo order list is %d, but there are %d nodes".format(L.size, nodes.size) )
+    L
+ }
 
 }
 
@@ -216,6 +247,8 @@ object AdjListReader {
         val u = toks.head
         val vList = toks.tail
         val weight = 1.0
+        // handle isolated vertex
+        graph.insertNode(u)
         vList.foreach{ v => if(!graph.hasEdge(u,v,directed)) { graph.insertEdge(u,v,directed,weight) } }        
       }
     }
